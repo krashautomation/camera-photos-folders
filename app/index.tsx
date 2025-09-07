@@ -10,7 +10,6 @@ import {
 } from 'react-native';
 import { router } from 'expo-router';
 import ProjectCard from '../src/components/ProjectCard';
-import FloatingActionButton from '../src/components/FloatingActionButton';
 import Header from '../src/components/Header';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Project } from '../src/types';
@@ -56,10 +55,6 @@ export default function Index() {
     router.push(`/project/${projectId}`);
   };
 
-  const handleCameraPress = () => {
-    router.push('/camera');
-  };
-
   const handleCreateProject = () => {
     router.push('/create-project');
   };
@@ -101,8 +96,6 @@ export default function Index() {
 
         <View style={styles.bottomPadding} />
       </ScrollView>
-
-      <FloatingActionButton onPress={handleCameraPress} />
     </View>
   );
 }

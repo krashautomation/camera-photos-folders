@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   View, 
   Text, 
@@ -9,7 +9,7 @@ import {
   Dimensions,
   Alert 
 } from 'react-native';
-import { router, useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import Header from '../../src/components/Header';
 import FloatingActionButton from '../../src/components/FloatingActionButton';
@@ -25,19 +25,27 @@ export default function ProjectDetailScreen() {
   const [selectedPhotos, setSelectedPhotos] = useState<string[]>([]);
   const [selectionMode, setSelectionMode] = useState(false);
 
-  useEffect(() => {
-    const loadProject = async () => {
-      try {
-        const storedProjectsString = await AsyncStorage.getItem('projects');
-        const storedProjects: Project[] = storedProjectsString ? JSON.parse(storedProjectsString) : [];
-        const foundProject = storedProjects.find(p => p.id === id);
-        setProject(foundProject);
-      } catch (error) {
-        console.error('Failed to load project:', error);
-      }
-    };
-    loadProject();
+  const loadProject = useCallback(async () => {
+    try {
+      const storedProjectsString = await AsyncStorage.getItem('projects');
+      const storedProjects: Project[] = storedProjectsString ? JSON.parse(storedProjectsString) : [];
+      const foundProject = storedProjects.find(p => p.id === id);
+      setProject(foundProject);
+    } catch (error) {
+      console.error('Failed to load project:', error);
+    }
   }, [id]);
+
+  useEffect(() => {
+    loadProject();
+  }, [loadProject]);
+
+  // Refresh project data when screen comes back into focus
+  useFocusEffect(
+    useCallback(() => {
+      loadProject();
+    }, [loadProject])
+  );
 
   if (!project) {
     return (

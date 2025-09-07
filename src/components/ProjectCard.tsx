@@ -11,10 +11,21 @@ const { width } = Dimensions.get('window');
 const cardWidth = (width - 48) / 2;
 
 export default function ProjectCard({ project, onPress }: ProjectCardProps) {
+  // Get the first photo as thumbnail, or use coverPhoto as fallback
+  const thumbnailUri = project.photos.length > 0 
+    ? project.photos[0].uri 
+    : project.coverPhoto;
+
   return (
     <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.8}>
       <View style={[styles.colorBar, { backgroundColor: project.color }]} />
-      <Image source={{ uri: project.coverPhoto }} style={styles.image} />
+      {thumbnailUri ? (
+        <Image source={{ uri: thumbnailUri }} style={styles.image} />
+      ) : (
+        <View style={[styles.placeholderImage, { backgroundColor: project.color }]}>
+          <Text style={styles.placeholderText}>No Photos</Text>
+        </View>
+      )}
       <View style={styles.content}>
         <Text style={styles.title} numberOfLines={1}>
           {project.name}
@@ -51,6 +62,18 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 120,
     resizeMode: 'cover',
+  },
+  placeholderImage: {
+    width: '100%',
+    height: 120,
+    justifyContent: 'center',
+    alignItems: 'center',
+    opacity: 0.3,
+  },
+  placeholderText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '500',
   },
   content: {
     padding: 12,
